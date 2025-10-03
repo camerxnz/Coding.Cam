@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <style>
+  :root{ --bg:#07102b; --card: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+  body{ margin:0; min-height:100vh; min-height:100dvh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg, #080712 0%, #0e063a 60%); color:#e8eefc; }
+  .welcome-wrap{ display:flex; align-items:center; justify-content:center; min-height:100vh; min-height:100dvh; padding:60px 18px; box-sizing:border-box; }
+    .welcome-card{ background: rgba(255,255,255,0.01); padding:28px; border-radius:18px; box-shadow: 0 40px 120px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.04); max-width:920px; width:100%; display:flex; gap:20px; align-items:center; }
+    .welcome-left{ flex:1; }
+    /* Fluid typography uses clamp to avoid cutoffs on small screens */
+    .welcome-title{ font-size:clamp(20px, 4.5vw, 40px); margin:0 0 8px 0; color:#f7fbff; font-weight:800; line-height:1.03; }
+    .welcome-sub{ color:#fff; margin:0 0 18px 0; font-size:clamp(0.95rem, 2.2vw, 1.1rem); }
+    .welcome-cta{ display:inline-flex; align-items:center; gap:12px; padding:12px 18px; border-radius:12px; background: linear-gradient(180deg, #ffffff, #e9f0ff); color:#07102b; font-weight:800; box-shadow: 0 8px 32px rgba(2,6,23,0.45); cursor:pointer; transform-style:preserve-3d; transition: transform 220ms ease, box-shadow 220ms ease; }
+    .welcome-cta:active{ transform: translateY(1px) translateZ(-6px); }
+    .arrow{ width:18px; height:18px; transform:translateZ(8px); }
+    /* ensure the stars canvas covers full viewport without creating scroll */
+  #welcomeStars{ position:fixed; left:0; top:0; width:100vw; width:100dvw; height:100vh; height:100dvh; z-index:-1; pointer-events:none; }
+    .stardust-layer{ position:absolute; inset:auto; pointer-events:none; }
+    @media (max-width:720px){ .welcome-card{ padding:18px; border-radius:14px; } .welcome-title{ font-size:clamp(18px, 7vw, 26px); } .welcome-cta{ padding:10px 14px; } /* reduce heavy shadows on small screens */ .welcome-card, .welcome-cta{ box-shadow: 0 10px 28px rgba(2,6,23,0.45); }
+    }
+    .welcome-btn-3d {
+      border-radius: 64px !important;
+      padding: 44px 90px 38px 90px !important;
+      font-size: 2.8rem !important;
+    }
+    @media (max-width: 900px) {
+      .welcome-btn-3d {
+        font-size: 1.7rem !important;
+        padding: 28px 48px 22px 48px !important;
+        border-radius: 40px !important;
+      }
+    }
+    @media (max-width: 700px) {
+      .welcome-btn-3d {
+        font-size: 1.2rem !important;
+        padding: 18px 32px 14px 32px !important;
+        border-radius: 28px !important;
+      }
+    }
+    @media (max-width: 400px) {
+      .welcome-btn-3d {
+        font-size: 0.9rem !important;
+        padding: 10px 16px 8px 16px !important;
+        border-radius: 16px !important;
+      }
+    }
+  </style>
+  <style>
+    .welcome-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      /* match About page background for consistency */
+      background: linear-gradient(180deg, #080712 0%, #0e063a 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* ensure full-screen on mobile; dvh first then fallback */
+      height: 100dvh;
+      height: 100vh;
+      transition: opacity 0.7s cubic-bezier(.4,1.7,.6,1), visibility 0.7s;
+      opacity: 1;
+      visibility: visible;
+      overflow: hidden;
+    }
+    .welcome-overlay.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .welcome-btn-3d {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 64px 28px 64px;
+      border-radius: 200px;
+      background: linear-gradient(120deg, #181c2f 80%, #232a4a 100%);
+      box-shadow:
+        0 24px 96px 0 #010314cc,
+        0 2px 0 #0a0c18 inset,
+        0 0 0 8px #1d0f5c44;
+      font-family: 'Baloo 2', cursive, 'Times New Roman', Times, serif, sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0a0709;
+      letter-spacing: 2px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition:
+        transform 0.18s cubic-bezier(.4,1.7,.6,1),
+        box-shadow 0.25s,
+        background 0.3s,
+        filter 0.3s;
+      will-change: transform, box-shadow, filter;
+      position: relative;
+      user-select: none;
+      perspective: 800px;
+      animation: welcome-pop 1.2s cubic-bezier(.4,1.7,.6,1) 0.2s both, welcome-float 3.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 48px #010314cc);
+    }
+    .welcome-btn-3d:active {
+      transform: scale(0.97) rotateX(2deg) rotateY(-2deg);
+      box-shadow:
+        0 4px 16px 0 #01031499,
+        0 1px 0 #0a0c18 inset;
+      background: linear-gradient(120deg, #02030a 80%, #080a14 100%);
+      filter: drop-shadow(0 0 12px #1d0f5c99);
+    }
+    .welcome-btn-3d:hover, .welcome-btn-3d:focus-visible {
+      transform:
+        scale(1.13)
+        rotateX(-18deg)
+        rotateY(18deg)
+        skewY(-2deg)
+        translateY(-8px);
+      box-shadow:
+        0 64px 180px 0 rgba(6,8,23,0.85),
+        0 6px 18px rgba(0,0,0,0.45) inset,
+        0 0 0 14px rgba(6,8,23,0.36);
+      /* darker hover background for a more dramatic, moody entrance */
+      background: linear-gradient(120deg, #0b0c18 72%, #06060b 100%);
+      color: #e6e9ff;
+      filter: drop-shadow(0 0 28px rgba(0,0,0,0.8)) brightness(0.95);
+    }
+    @keyframes welcome-pop {
+      0% { opacity: 0; transform: scale(0.7) rotateX(40deg);}
+      70% { opacity: 1; transform: scale(1.08) rotateX(-10deg);}
+      100% { opacity: 1; transform: scale(1) rotateX(0);}
+    }
+    @keyframes welcome-float {
+      0%, 100% { transform: translateY(0) scale(1) rotateX(0) rotateY(0);}
+      50% { transform: translateY(-18px) scale(1.04) rotateX(-6deg) rotateY(6deg);}
+    }
+    .welcome-animated-arrow {
+      margin-top: 18px;
+      width: 77px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: arrow-bounce 2s infinite cubic-bezier(.4,1.7,.6,1);
+      filter: drop-shadow(0 4px 16px #030305e0);
+    }
+    /* Dark-toned arrow stroke by default */
+    .welcome-animated-arrow svg path {
+      stroke: #0b0b12; /* dark navy/near-black */
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 220ms ease, opacity 220ms ease, filter 220ms ease;
+      opacity: 0.95;
+      filter: drop-shadow(0 1px 6px rgba(0,0,0,0.6));
+    }
+    /* Slight accent on hover without brightening too much */
+    .welcome-btn-3d:hover .welcome-animated-arrow svg path,
+    .welcome-btn-3d:focus-visible .welcome-animated-arrow svg path {
+      stroke: #1b2433; /* subtle dark-blue accent */
+      opacity: 1;
+      filter: drop-shadow(0 3px 12px rgba(0,0,0,0.7));
+    }
+    @keyframes arrow-bounce {
+      0%, 100% { transform: translateY(0);}
+      50% { transform: translateY(16px);}
+    }
+    /* Welcome overlay shooting stars */
+    .welcome-stars-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      filter: blur(0.5px) brightness(1.2) drop-shadow(0 0 12px #02125588);
+      opacity: 0.92;
+      transition: opacity 0.7s;
+    }
+    .welcome-overlay.hide .welcome-stars-canvas {
+      opacity: 0;
+    }
+    @media (max-width: 700px) {
+      .welcome-btn-3d {
+        font-size: 1.2rem;
+        padding: 18px 32px 14px 32px;
+        border-radius: 28px;
+      }
+      .welcome-animated-arrow {
+        width: 28px;
+        height: 28px;
+        margin-top: 10px;
+      }
+    }
+    /* Subtext and stardust */
+    .welcome-subtext{
+      display:block;
+      font-size:1.05rem;
+      font-weight:600;
+      letter-spacing:1.2px;
+      color: #ffffff; /* white text */
+      margin-top:8px;
+      z-index: 3;
+      transform: translateZ(18px);
+    }
+    .stardust-layer{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+    .stardust-particle{ position:absolute; width:6px; height:6px; border-radius:50%; background: linear-gradient(180deg, #fff, #cfe4ff); opacity:0.95; box-shadow: 0 0 8px rgba(120,170,255,0.9); transform: translateY(0) scale(1); transition: transform 1200ms linear, opacity 800ms linear; }
+  </style>
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <canvas class="welcome-stars-canvas" id="welcomeStars"></canvas>
+    <button class="welcome-btn-3d" id="welcomeBtn" tabindex="1">
+      Welcome!
+      <span class="welcome-subtext">Click to Enter</span>
+      <span class="welcome-animated-arrow">
+        <!-- Animated Down Arrow SVG -->
+        <svg width="100%" height="100%" viewBox="0 0 44 44" fill="none">
+          <path d="M22 12v20" stroke="#4f6fff" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 28l10 10 10-10" stroke="#4f6fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <animateTransform attributeName="transform" type="translate" values="0 0; 0 8; 0 0" dur="1.2s" repeatCount="indefinite"/>
+        </svg>
+      </span>
+      <!-- stardust particle layer (populated by JS on hover) -->
+      <div class="stardust-layer" aria-hidden="true"></div>
+    </button>
+  </div>
+  <script>
+    // Hide overlay and allow site interaction after click
+    const welcomeOverlay = document.getElementById('welcomeOverlay');
+    const welcomeBtn = document.getElementById('welcomeBtn');
+    function hideWelcome() {
+      welcomeOverlay.classList.add('hide');
+      setTimeout(() => {
+        welcomeOverlay.style.display = 'none';
+      }, 800);
+      // Optionally focus main content or title
+      setTimeout(() => {
+        const mainTitle = document.getElementById('dynamic-title');
+        if (mainTitle) mainTitle.focus();
+      }, 900);
+    }
+    welcomeBtn.addEventListener('click', hideWelcome);
+    welcomeBtn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        hideWelcome();
+      }
+    });
+    // Prevent scrolling/interacting with background while overlay is shown
+    document.body.style.overflow = 'hidden';
+    welcomeOverlay.addEventListener('transitionend', () => {
+      if (welcomeOverlay.classList.contains('hide')) {
+        document.body.style.overflow = '';
+      }
+    });
+
+  // Stardust particle effect for the subtext when hovered
+    (function(){
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Respect global preference and our low-power heuristic from canvasUtils if present
+  const globalReduced = prefersReduced || (window.canvasUtils && window.canvasUtils.prefersReducedMotion);
+  const lowPower = window.canvasUtils && window.canvasUtils.lowPowerMode;
+  if(globalReduced) return;
+      const btn = document.getElementById('welcomeBtn');
+      const layer = btn.querySelector('.stardust-layer');
+      let spawnTimer = null;
+
+      function spawnParticle(x, y){
+        const p = document.createElement('div'); p.className = 'stardust-particle';
+        const size = 4 + Math.random()*6; p.style.width = size + 'px'; p.style.height = size + 'px';
+        p.style.left = (x - size/2) + 'px'; p.style.top = (y - size/2) + 'px';
+        layer.appendChild(p);
+        // random horizontal drift and fall distance
+        const drift = (Math.random() - 0.5) * 120; // px
+        const fall = 160 + Math.random()*220; // px
+        // animate via transform to keep it GPU-friendly
+        requestAnimationFrame(()=>{
+          p.style.transform = `translate(${drift}px, ${fall}px) scale(${0.6 + Math.random()*0.5})`;
+          p.style.opacity = '0';
+        });
+        // remove after animation
+        setTimeout(()=>{ try{ p.remove(); }catch(e){} }, 1400);
+      }
+
+      function onEnter(e){
+        // continuous spawn while hovered
+        const rect = btn.getBoundingClientRect();
+        const interval = lowPower ? 220 : 90;
+        spawnTimer = setInterval(()=>{
+          const rx = rect.left + rect.width*0.5 + (Math.random()-0.5)*rect.width*0.6;
+          const ry = rect.top + rect.height*0.6 + (Math.random()-0.2)*24;
+          spawnParticle(rx - rect.left, ry - rect.top);
+        }, interval);
+      }
+      function onLeave(){ if(spawnTimer){ clearInterval(spawnTimer); spawnTimer = null; } }
+
+    btn.addEventListener('pointerenter', onEnter);
+    btn.addEventListener('pointerleave', onLeave);
+      // touch support: spawn a burst on touchstart
+      btn.addEventListener('touchstart', e=>{ const rect = btn.getBoundingClientRect(); for(let i=0;i<14;i++){ const rx = rect.width*0.5 + (Math.random()-0.5)*rect.width*0.8; const ry = rect.height*0.6 + (Math.random()-0.4)*24; spawnParticle(rx, ry); } }, {passive:true});
+    })();
+
+    // --- Welcome Overlay Shooting Stars & Static Stars ---
+    const welcomeStars = document.getElementById('welcomeStars');
+    // Use shared canvas helper if available for DPR-aware sizing
+    let welcomeDestroyDPR = null;
+    if(window.canvasUtils && window.canvasUtils.setCanvasDPR){
+      welcomeDestroyDPR = window.canvasUtils.setCanvasDPR(welcomeStars, { resize: true });
+    } else {
+      function resizeWelcomeStars() {
+        const dpr = window.devicePixelRatio || 1;
+    const cssW = welcomeStars.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+    const cssH = welcomeStars.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+    welcomeStars.width = Math.round(cssW * dpr);
+    welcomeStars.height = Math.round(cssH * dpr);
+  // use dynamic viewport units where supported for mobile browsers
+  welcomeStars.style.width = CSS && CSS.supports && CSS.supports('width','100dvw') ? '100dvw' : '100vw';
+  welcomeStars.style.height = CSS && CSS.supports && CSS.supports('height','100dvh') ? '100dvh' : '100vh';
+        const ctx = welcomeStars.getContext('2d');
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+      }
+      window.addEventListener('resize', resizeWelcomeStars);
+      resizeWelcomeStars();
+    }
+
+    // Star data
+    const wStaticStars = [];
+    const wShootingStars = [];
+    function genWelcomeStaticStars() {
+      wStaticStars.length = 0;
+  const sw = welcomeStars.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+  const sh = welcomeStars.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+  const count = Math.floor(sw * sh / 1200);
+      for (let i = 0; i < count; i++) {
+        wStaticStars.push({
+    x: Math.random() * (welcomeStars.clientWidth || document.documentElement.clientWidth || window.innerWidth),
+    y: Math.random() * (welcomeStars.clientHeight || document.documentElement.clientHeight || window.innerHeight),
+          radius: Math.random() * 1.2 + 0.3,
+          alpha: Math.random() * 0.7 + 0.2,
+          twinkle: Math.random() * 0.04 + 0.01,
+          baseAlpha: Math.random() * 0.7 + 0.2,
+          color: Math.random() < 0.85
+            ? 'rgba(180,200,255,1)'
+            : (Math.random() < 0.5 ? 'rgba(120,170,255,1)' : 'rgba(200,220,255,1)')
+        });
+      }
+    }
+    genWelcomeStaticStars();
+    window.addEventListener('resize', genWelcomeStaticStars);
+
+    function spawnWelcomeShootingStar() {
+      if (Math.random() < 0.012) {
+  const heightRef = welcomeStars.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+  const y = Math.random() * heightRef * 0.7 + heightRef * 0.1;
+        wShootingStars.push({
+          x: -120,
+          y: y,
+          len: 120 + Math.random() * 80,
+          speed: 14 + Math.random() * 10,
+          alpha: 1,
+          width: 2.2 + Math.random() * 2.2,
+          angle: Math.PI / 8 + Math.random() * Math.PI / 14
+        });
+      }
+    }
+
+    function drawWelcomeStaticStars(ctx) {
+      for (const star of wStaticStars) {
+        // Twinkle effect
+        star.alpha += (Math.random() - 0.5) * star.twinkle;
+        if (star.alpha > 1) star.alpha = 1;
+        if (star.alpha < 0.15) star.alpha = 0.15;
+        ctx.save();
+        ctx.globalAlpha = star.alpha;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = star.color;
+        ctx.shadowColor = '#4f6fff';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function drawWelcomeShootingStars(ctx) {
+      for (let i = wShootingStars.length - 1; i >= 0; i--) {
+        const star = wShootingStars[i];
+        ctx.save();
+        ctx.globalAlpha = star.alpha;
+        const dx = Math.cos(star.angle) * star.len;
+        const dy = Math.sin(star.angle) * star.len;
+        const grad = ctx.createLinearGradient(star.x, star.y, star.x + dx, star.y + dy);
+        grad.addColorStop(0, 'rgba(120,200,255,1)');
+        grad.addColorStop(0.5, 'rgba(0,120,255,0.8)');
+        grad.addColorStop(1, 'rgba(0,0,64,0)');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = star.width;
+        ctx.shadowColor = '#4f6fff';
+        ctx.shadowBlur = 24;
+        ctx.beginPath();
+        ctx.moveTo(star.x, star.y);
+        ctx.lineTo(star.x + dx, star.y + dy);
+        ctx.stroke();
+        ctx.restore();
+
+        star.x += Math.cos(star.angle) * star.speed;
+        star.y += Math.sin(star.angle) * star.speed;
+        star.alpha -= 0.009;
+  const wRef = welcomeStars.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+  const hRef = welcomeStars.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+  if (star.alpha <= 0 || star.x > wRef + 120 || star.y > hRef + 40) {
+          wShootingStars.splice(i, 1);
+        }
+      }
+    }
+
+    function animateWelcomeStars() {
+      const ctx = welcomeStars.getContext('2d');
+      // clear using CSS size * DPR (canvas already scaled via helper)
+      ctx.clearRect(0, 0, welcomeStars.width, welcomeStars.height);
+      drawWelcomeStaticStars(ctx);
+      // reduce shooting frequency on low-power devices
+      const lowPowerMode = window.canvasUtils && window.canvasUtils.lowPowerMode;
+      if(!lowPowerMode) spawnWelcomeShootingStar();
+      drawWelcomeShootingStars(ctx);
+      requestAnimationFrame(animateWelcomeStars);
+    }
+    animateWelcomeStars();
+
+    // If canvas helper returned a destroy fn, expose it for cleanup when overlay closed
+    welcomeOverlay._destroyCanvas && welcomeOverlay._destroyCanvas();
+    welcomeOverlay._destroyCanvas = welcomeDestroyDPR;
+
+    // Focus trap + Escape-to-close for welcome overlay using uiUtils
+    if(window.uiUtils){
+      let releaseTrap = null, releaseEsc = null;
+      function openTrap(){
+        releaseTrap = window.uiUtils.trapFocus(welcomeOverlay);
+        releaseEsc = window.uiUtils.escClose(welcomeOverlay, hideWelcome);
+      }
+      // Open trap immediately (overlay is visible on load)
+      openTrap();
+      // When overlay hidden, release handlers
+      welcomeOverlay.addEventListener('transitionend', ()=>{
+        if(welcomeOverlay.classList.contains('hide')){
+          releaseTrap && releaseTrap();
+          releaseEsc && releaseEsc();
+        }
+      });
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <style>
+    /* General Body */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #080712 0%, #0e063a 60%);
+      font-family: Arial, sans-serif;
+    }
+
+    /* Floating Title */
+    .floating-title {
+      display: inline-block;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #010003;
+      text-decoration: none;
+      margin-bottom: 30px;
+      animation: float 5s ease-in-out infinite;
+      cursor: pointer;
+      transition: color 0.5s;
+      font-family: 'Baloo 2', cursive, sans-serif;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 0 #0a0404;
+    }
+
+    .floating-title:hover {
+      color: #1d0f5c;
+    }
+
+    /* Floating Image */
+    .floating-img {
+      width: 400px;
+      height: 400px;
+      border-radius: 75px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      background: rgba(46, 43, 43, 0.6);
+      backdrop-filter: blur(20px);
+      animation: float 5s ease-in-out infinite;
+      margin-bottom: 30px;
+      object-fit: cover;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* Buttons */
+    .button {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 24px;
+      border-radius: 100px;
+      background: rgba(48, 42, 42, 0.7);
+      backdrop-filter: blur(50px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      text-decoration: none;
+      color: #0c0303;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .button:hover {
+      transform: translateY(-5px);
+      background: rgba(156, 142, 142, 0.9);
+    }
+
+    .button:active {
+      transform: scale(1.05) translateY(-5px);
+      box-shadow: 
+        0 35px 70px rgba(0, 0, 0, 0.5),
+        0 20px 30px rgba(0, 0, 0, 0.4),
+        inset 0 4px 12px rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <style>
+    /* Global responsive helpers to avoid cutoffs and improve smooth feel */
+    html, body { width:100%; min-height:100%; overflow-x:hidden; }
+    img, video, canvas { max-width:100%; height:auto; display:block; }
+    button, .button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    /* Make floating title and image scale fluidly */
+    .floating-title { font-size: clamp(1.6rem, 4vw, 3.5rem); }
+    .floating-img { width: min(60vw, 400px); height: auto; max-width: 90vw; }
+
+    /* Welcome button: fluid padding and clamp font-size so it never overflows small screens */
+    .welcome-btn-3d { font-size: clamp(0.9rem, 4.5vw, 2.2rem); padding: clamp(12px, 3.5vw, 32px) clamp(24px, 6vw, 64px); }
+    .welcome-subtext { font-size: clamp(0.85rem, 2.8vw, 1.05rem); }
+
+    /* Reduce heavy shadows and animations on small screens for performance and non-cutoff */
+    @media (max-width: 700px){
+      .welcome-btn-3d { transform: none !important; box-shadow: 0 12px 36px rgba(6,8,23,0.5); }
+      .welcome-animated-arrow { width: 36px; height: 28px; }
+      .welcome-overlay { align-items: center; padding: 18px; }
+      .welcome-stars-canvas { filter: blur(0.6px) brightness(1.05); }
+    }
+  </style>
+
+  <!-- Floating Title with 3D Look and Interactive Hover Trick -->
+  <a href="#" onclick="location.reload();" class="floating-title" id="dynamic-title">Coding.cam</a>
+  <style>
+    /* Enhanced 3D Title Effect */
+    #dynamic-title {
+      font-size: 3.5rem;
+      font-family: 'Baloo 2', cursive, sans-serif;
+      color: #010003;
+      perspective: 800px;
+      letter-spacing: 3px;
+      text-shadow:
+        0 8px 32px rgba(30,30,80,0.38),
+        0 2px 0 #0a0404,
+        0 0 0 #0c0438;
+      will-change: transform, text-shadow;
+      transition:
+        color 0.5s,
+        text-shadow 0.3s,
+        transform 0.5s cubic-bezier(.23,1.12,.32,1),
+        filter 0.4s;
+      outline: none;
+      user-select: none;
+      filter: drop-shadow(0 4px 24px #1d0f5c55);
+      /* Subtle 3D tilt by default */
+      transform: rotateY(-8deg) rotateX(4deg) scale(1.08);
+    }
+    #dynamic-title:hover, #dynamic-title:focus-visible {
+      color: #1d0f5c;
+      text-shadow:
+        0 16px 48px rgba(60,60,120,0.45),
+        0 4px 0 #0a0404,
+        0 0 16px #16063b;
+      /* Cool trick: flip, pop, and glow */
+      transform:
+        rotateY(24deg)
+        rotateX(-12deg)
+        scale(1.18)
+        skewY(-2deg);
+      filter: drop-shadow(0 0 32px #4f6fff88);
+      cursor: pointer;
+    }
+    #dynamic-title:active {
+      color: #0a0a2a;
+      transform: scale(0.98) rotateY(-6deg) rotateX(2deg);
+      text-shadow:
+        0 8px 32px rgba(60,60,120,0.35),
+        0 2px 0 #0a0404;
+    }
+  </style>
+
+  <!-- Floating Image -->
+  <img src="https://i.imgur.com/L97MMz2.jpeg" alt="Cameron Portfolio Image" class="floating-img">
+
+  <!-- Buttons -->
+  <a href="about.html" class="button">About Me</a>
+  <a href="https://instagram.com/coding.cam" target="_blank" class="button">Instagram</a>
+
+</body>
+<script>
+  /*
+    3D moving background effect with dark blue/black tones.
+    Uses animated Perlin noise for a smooth, futuristic vibe.
+    Static and shooting stars remain in the background.
+  */
+
+  // --- Perlin Noise Implementation (simple, fast) ---
+  function Perlin(seed) {
+    this.p = new Uint8Array(512);
+    for (let i = 0; i < 256; ++i) this.p[i] = i;
+    for (let i = 255; i > 0; --i) {
+      const n = Math.floor((seed = (seed * 9301 + 49297) % 233280) / 233280 * (i + 1));
+      [this.p[i], this.p[n]] = [this.p[n], this.p[i]];
+    }
+    for (let i = 0; i < 256; ++i) this.p[256 + i] = this.p[i];
+  }
+  Perlin.prototype.fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+  Perlin.prototype.lerp = (a, b, t) => a + t * (b - a);
+  Perlin.prototype.grad = (hash, x, y) => ((hash & 1) ? -x : x) + ((hash & 2) ? -y : y);
+  Perlin.prototype.noise = function(x, y) {
+    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+    x -= Math.floor(x); y -= Math.floor(y);
+    const u = this.fade(x), v = this.fade(y);
+    const A = this.p[X] + Y, B = this.p[X + 1] + Y;
+    return this.lerp(
+      this.lerp(this.grad(this.p[A], x, y), this.grad(this.p[B], x - 1, y), u),
+      this.lerp(this.grad(this.p[A + 1], x, y - 1), this.grad(this.p[B + 1], x - 1, y - 1), u),
+      v
+    ) * 0.5 + 0.5;
+  };
+
+  // --- 3D Background Canvas ---
+  const bgCanvas = document.createElement('canvas');
+  bgCanvas.style.position = 'fixed';
+  bgCanvas.style.top = 0;
+  bgCanvas.style.left = 0;
+  bgCanvas.style.width = '100vw';
+  bgCanvas.style.width = (CSS && CSS.supports && CSS.supports('width','100dvw')) ? '100dvw' : '100vw';
+  bgCanvas.style.height = (CSS && CSS.supports && CSS.supports('height','100dvh')) ? '100dvh' : '100vh';
+  bgCanvas.style.zIndex = '-2';
+  bgCanvas.style.pointerEvents = 'none';
+  bgCanvas.style.background = '#16015f';
+  document.body.prepend(bgCanvas);
+
+  function resizeBgCanvas() {
+  const bgW = bgCanvas.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+  const bgH = bgCanvas.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+  bgCanvas.width = bgW;
+  bgCanvas.height = bgH;
+  }
+  window.addEventListener('resize', resizeBgCanvas);
+  resizeBgCanvas();
+
+  const bgCtx = bgCanvas.getContext('2d');
+  const perlin = new Perlin(42);
+
+  // --- Animate 3D Perlin Noise Waves ---
+  function animate3DBG() {
+    const w = bgCanvas.width, h = bgCanvas.height;
+    const img = bgCtx.createImageData(w, h);
+    const data = img.data;
+    const t = performance.now() * 0.00018;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        // 3D effect: use y as "depth", animate with t
+        const nx = x / w - 0.5, ny = y / h - 0.5;
+        const d = Math.sqrt(nx * nx + ny * ny);
+        const z = t + d * 2.5;
+        let n = perlin.noise(nx * 2.2 + t * 0.3, ny * 2.2 + t * 0.2 + Math.sin(t), z);
+        n = Math.pow(n, 2.2); // contrast
+        // Color mapping: deep blue/black, with subtle gradients
+        const blue = Math.floor(38 + 110 * n);
+        const r = Math.floor(5 + 18 * n * (1 - d));
+        const g = Math.floor(10 + 30 * n * (1 - d));
+        const idx = (y * w + x) * 4;
+        data[idx] = r;
+        data[idx + 1] = g;
+        data[idx + 2] = blue;
+        data[idx + 3] = 255;
+      }
+    }
+    bgCtx.putImageData(img, 0, 0);
+    requestAnimationFrame(animate3DBG);
+  }
+  animate3DBG();
+
+  // --- Shooting Stars & Static Stars (from your previous code) ---
+
+  // Blue shooting stars and realistic static stars in the background
+  const starCanvas = document.createElement('canvas');
+  starCanvas.style.position = 'fixed';
+  starCanvas.style.top = 0;
+  starCanvas.style.left = 0;
+  starCanvas.style.width = (CSS && CSS.supports && CSS.supports('width','100dvw')) ? '100dvw' : '100vw';
+  starCanvas.style.height = (CSS && CSS.supports && CSS.supports('height','100dvh')) ? '100dvh' : '100vh';
+  starCanvas.style.pointerEvents = 'none';
+  starCanvas.style.zIndex = 0;
+  starCanvas.style.background = '#16015f';
+  document.body.prepend(starCanvas);
+
+  function resizeCanvas() {
+  const scW = starCanvas.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+  const scH = starCanvas.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+  starCanvas.width = scW;
+  starCanvas.height = scH;
+    generateStaticStars();
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const ctx = starCanvas.getContext('2d');
+  const shootingStars = [];
+  const staticStars = [];
+
+  // Generate static stars with more realism (varying size, color, twinkle)
+  function generateStaticStars() {
+    staticStars.length = 0;
+  const sW = starCanvas.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+  const sH = starCanvas.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+  const count = Math.floor(sW * sH / 1400);
+    for (let i = 0; i < count; i++) {
+      staticStars.push({
+        x: Math.random() * starCanvas.width,
+        y: Math.random() * starCanvas.height,
+        radius: Math.random() * 0.9 + 0.2,
+        alpha: Math.random() * 0.6 + 0.25,
+        twinkle: Math.random() * 0.04 + 0.01,
+        baseAlpha: Math.random() * 0.6 + 0.25,
+        color: Math.random() < 0.85
+          ? 'rgba(180,200,255,1)'
+          : (Math.random() < 0.5 ? 'rgba(120,170,255,1)' : 'rgba(200,220,255,1)')
+      });
+    }
+  }
+
+  function spawnShootingStar() {
+    if (Math.random() < 0.009) {
+      const y = Math.random() * starCanvas.height * 0.7 + starCanvas.height * 0.1;
+      shootingStars.push({
+        x: -120,
+        y: y,
+        len: 120 + Math.random() * 80,
+        speed: 12 + Math.random() * 8,
+        alpha: 1,
+        width: 1.3 + Math.random() * 1.5,
+        angle: Math.PI / 8 + Math.random() * Math.PI / 18
+      });
+    }
+  }
+
+  function drawStaticStars() {
+    for (const star of staticStars) {
+      // Twinkle effect
+      star.alpha += (Math.random() - 0.5) * star.twinkle;
+      if (star.alpha > 1) star.alpha = 1;
+      if (star.alpha < 0.15) star.alpha = 0.15;
+      ctx.save();
+      ctx.globalAlpha = star.alpha;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = star.color;
+      ctx.shadowColor = '#1a2a4a';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawShootingStars() {
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const star = shootingStars[i];
+      ctx.save();
+      ctx.globalAlpha = star.alpha;
+      const dx = Math.cos(star.angle) * star.len;
+      const dy = Math.sin(star.angle) * star.len;
+      const grad = ctx.createLinearGradient(star.x, star.y, star.x + dx, star.y + dy);
+      grad.addColorStop(0, 'rgba(120,200,255,1)');
+      grad.addColorStop(0.6, 'rgba(0,120,255,0.7)');
+      grad.addColorStop(1, 'rgba(0,0,64,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = star.width;
+      ctx.beginPath();
+      ctx.moveTo(star.x, star.y);
+      ctx.lineTo(star.x + dx, star.y + dy);
+      ctx.stroke();
+      ctx.restore();
+
+      star.x += Math.cos(star.angle) * star.speed;
+      star.y += Math.sin(star.angle) * star.speed;
+      star.alpha -= 0.008;
+      if (star.alpha <= 0 || star.x > starCanvas.width + 120 || star.y > starCanvas.height + 40) {
+        shootingStars.splice(i, 1);
+      }
+    }
+  }
+
+  function animateStars() {
+    ctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+    drawStaticStars();
+    spawnShootingStar();
+    drawShootingStars();
+    requestAnimationFrame(animateStars);
+  }
+  animateStars();
+</script>
+<!-- Dynamic Apple iOS 17/18/26-style Side Buttons for Skills (Right Side) -->
+<style>
+  .side-skills-bar {
+    position: fixed;
+    top: 50%;
+    right: 32px;
+    left: auto;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .side-skill-btn {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 64px;
+    padding: 0 22px 0 16px;
+    height: 54px;
+    border-radius: 28px;
+    background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(80,120,255,0.13) 100%);
+    box-shadow:
+      0 2px 12px 0 rgba(40,60,120,0.13),
+      0 1.5px 0.5px 0 rgba(255,255,255,0.12) inset;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(16px) saturate(1.4);
+    color: #0a0a2a;
+    font-family: 'Baloo 2', Arial, sans-serif;
+    font-size: 1.18rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition:
+      background 0.25s cubic-bezier(.4,1.7,.6,1),
+      box-shadow 0.25s,
+      transform 0.18s cubic-bezier(.4,1.7,.6,1);
+    user-select: none;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .side-skill-btn:hover, .side-skill-btn:focus-visible {
+    background: linear-gradient(120deg, rgba(120,180,255,0.22) 0%, rgba(255,255,255,0.22) 100%);
+    box-shadow:
+      0 6px 32px 0 rgba(80,120,255,0.22),
+      0 2.5px 1.5px 0 rgba(255,255,255,0.18) inset;
+    transform: scale(1.07) translateX(-6px);
+    color: #1d0f5c;
+  }
+  .side-skill-btn:active {
+    background: linear-gradient(120deg, rgba(80,120,255,0.18) 0%, rgba(255,255,255,0.13) 100%);
+    box-shadow:
+      0 2px 8px 0 rgba(80,120,255,0.13),
+      0 1.5px 0.5px 0 rgba(255,255,255,0.12) inset;
+    transform: scale(0.97) translateX(0);
+    color: #0a0a2a;
+  }
+  .side-skill-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 2px 8px #4f6fff22);
+  }
+  @media (max-width: 700px) {
+    .side-skills-bar {
+      right: 8px;
+      gap: 18px;
+    }
+    .side-skill-btn {
+      min-width: 44px;
+      height: 42px;
+      font-size: 1rem;
+      padding: 0 12px 0 10px;
+    }
+    .side-skill-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+  }
+</style>
+<div class="side-skills-bar">
+  <button class="side-skill-btn" title="HTML">
+    <span class="side-skill-icon">
+      <!-- HTML5 SVG Icon -->
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+        <path d="M5 4l2.2 24.1L16 28l8.8-3.9L27 4H5z" fill="#e44d26"/>
+        <path d="M16 25.2l7.1-3.1L24.8 6H16v19.2z" fill="#f16529"/>
+        <path d="M16 13.2h-3.2l-.2-2.2H16V8.9h-5.2l.1 1.3.5 5.7H16v-2.7zm0 5.3h-2.7l-.2-2.2H16v-2.2h-5.1l.1 1.3.5 5.7H16v-2.6z" fill="#fff"/>
+        <path d="M16 13.2v2.7h2.7l-.2 2.2H16v2.6h4.2l.5-5.7.1-1.3H16v2.2zm0-4.3v2.2h2.7l-.2 2.2H16v2.7h4.2l.5-5.7.1-1.3H16z" fill="#ebebeb"/>
+      </svg>
+    </span>
+    HTML
+  </button>
+  <button class="side-skill-btn" title="CSS">
+    <span class="side-skill-icon">
+      <!-- CSS3 SVG Icon -->
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+        <path d="M5 4l2.2 24.1L16 28l8.8-3.9L27 4H5z" fill="#1572b6"/>
+        <path d="M16 25.2l7.1-3.1L24.8 6H16v19.2z" fill="#33a9dc"/>
+        <path d="M16 13.2h-3.2l-.2-2.2H16V8.9h-5.2l.1 1.3.5 5.7H16v-2.7zm0 5.3h-2.7l-.2-2.2H16v-2.2h-5.1l.1 1.3.5 5.7H16v-2.6z" fill="#fff"/>
+        <path d="M16 13.2v2.7h2.7l-.2 2.2H16v2.6h4.2l.5-5.7.1-1.3H16v2.2zm0-4.3v2.2h2.7l-.2 2.2H16v2.7h4.2l.5-5.7.1-1.3H16z" fill="#ebebeb"/>
+      </svg>
+    </span>
+    CSS
+  </button>
+  <button class="side-skill-btn" title="Java">
+    <span class="side-skill-icon">
+      <!-- Java SVG Icon -->
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+        <ellipse cx="16" cy="24" rx="10" ry="3" fill="#e76f00"/>
+        <path d="M16 22c-2.5-2.5 2.5-4 0-8 2.5 2.5-2.5 4 0 8z" fill="#5382a1"/>
+        <path d="M16 6c2.5 3.5-2.5 5.5 0 9-2.5-3.5 2.5-5.5 0-9z" fill="#5382a1"/>
+        <path d="M16 18c1.5 1.5-1.5 2.5 0 5-1.5-1.5 1.5-2.5 0-5z" fill="#e76f00"/>
+        <ellipse cx="16" cy="28" rx="7" ry="1.5" fill="#5382a1" opacity="0.5"/>
+      </svg>
+    </span>
+    Java
+  </button>
+  <button class="side-skill-btn" title="Troubleshooting">
+    <span class="side-skill-icon">
+      <!-- Troubleshooting SVG Icon (Wrench) -->
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+        <path d="M28 6.5a6.5 6.5 0 0 1-8.7 8.7l-9.6 9.6a3 3 0 1 1-4.2-4.2l9.6-9.6A6.5 6.5 0 1 1 28 6.5z" fill="#0078d6"/>
+        <circle cx="7" cy="25" r="2" fill="#fff"/>
+      </svg>
+    </span>
+    Troubleshooting
+  </button>
+  <button class="side-skill-btn" title="Problem Solving">
+    <span class="side-skill-icon">
+      <!-- Problem Solving SVG Icon (Lightbulb) -->
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+        <ellipse cx="16" cy="14" rx="8" ry="8" fill="#ffe066"/>
+        <rect x="13" y="22" width="6" height="5" rx="2" fill="#ffd700"/>
+        <rect x="14" y="27" width="4" height="2" rx="1" fill="#ffd700"/>
+        <rect x="15" y="29" width="2" height="1" rx="0.5" fill="#ffd700"/>
+      </svg>
+    </span>
+    Problem Solving
+  </button>
+</div>
+<script>
+  // Optional: Animate the side buttons in on load (iOS 17/18/26 style)
+  document.querySelectorAll('.side-skill-btn').forEach((btn, i) => {
+    btn.style.opacity = '0';
+    btn.style.transform += ' translateY(32px)';
+    setTimeout(() => {
+      btn.style.transition += ', opacity 0.6s cubic-bezier(.4,1.7,.6,1)';
+      btn.style.opacity = '1';
+      btn.style.transform = btn.style.transform.replace(' translateY(32px)', '');
+    }, 400 + i * 120);
+  });
+</script>
+<!-- Responsive Enhancements -->
+<style>
+  /* Responsive layout for body and main elements */
+  @media (max-width: 900px) {
+    .floating-img {
+      width: 260px;
+      height: 260px;
+      border-radius: 48px;
+    }
+    .floating-title, #dynamic-title {
+      font-size: 2.1rem !important;
+      letter-spacing: 1.5px;
+    }
+    .button {
+      font-size: 1rem;
+      padding: 10px 18px;
+    }
+  }
+  @media (max-width: 600px) {
+    body {
+      padding: 12px;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    .floating-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 24px;
+      margin-bottom: 18px;
+    }
+    .floating-title, #dynamic-title {
+      font-size: 1.2rem !important;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+    .button {
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      margin: 6px;
+    }
+    .side-skills-bar {
+      right: 2px;
+      gap: 10px;
+    }
+    .side-skill-btn {
+      min-width: 36px;
+      height: 32px;
+      font-size: 0.85rem;
+      padding: 0 7px 0 6px;
+    }
+    .side-skill-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
+  }
+  @media (max-width: 400px) {
+    .floating-img {
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+    }
+    .floating-title, #dynamic-title {
+      font-size: 0.9rem !important;
+    }
+  }
+</style>
+<script>
+  // Ensure canvases always match device pixel ratio for sharpness
+  // Use shared canvas helper when available
+  function updateAllCanvases() {
+    if(window.canvasUtils && window.canvasUtils.setCanvasDPR){
+      // try to find any canvases in the document and apply DPR helper
+      document.querySelectorAll('canvas').forEach(c => {
+        try{ window.canvasUtils.setCanvasDPR(c, { resize: true }); } catch(e){}
+      });
+      // regenerate static stars only if not in lowPowerMode
+      if(!(window.canvasUtils && window.canvasUtils.lowPowerMode) && typeof generateStaticStars === 'function') generateStaticStars();
+    } else {
+      // fallback to previous behavior
+      if (typeof setCanvasDPR === 'function') setCanvasDPR(document.querySelector('canvas[style*=\"z-index: -2\"]'));
+      if (typeof setCanvasDPR === 'function') setCanvasDPR(document.querySelector('canvas[style*=\"z-index: 0\"]'));
+      if (typeof generateStaticStars === 'function') generateStaticStars();
+    }
+  }
+  window.addEventListener('resize', updateAllCanvases);
+  updateAllCanvases();
+</script>
+<!-- Skills Title (slides in/out) -->
+<style>
+  .skills-title {
+    position: fixed;
+    top: 10%;
+    right: 32px;
+    left: auto;
+    transform: translateY(-60px);
+    background: linear-gradient(120deg, rgba(255,255,255,0.85) 0%, rgba(120,180,255,0.18) 100%);
+    color: #1d0f5c;
+    font-family: 'Baloo 2', Arial, sans-serif;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    border-radius: 22px;
+    padding: 10px 32px 10px 24px;
+    box-shadow: 0 4px 24px 0 rgba(80,120,255,0.13);
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.7s cubic-bezier(.4,1.7,.6,1),
+      transform 0.7s cubic-bezier(.4,1.7,.6,1);
+  }
+  .skills-title.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  @media (max-width: 700px) {
+    .skills-title {
+      right: 8px;
+      font-size: 1.05rem;
+      padding: 7px 16px 7px 12px;
+      border-radius: 14px;
+    }
+  }
+  @media (max-width: 600px) {
+    .skills-title {
+      top: 7%;
+      right: 2px;
+      font-size: 0.92rem;
+      padding: 5px 10px 5px 8px;
+      border-radius: 10px;
+    }
+  }
+</style>
+<div class="skills-title" id="skillsTitle">Skills</div>
+<script>
+  // Slide in on load, slide out after 2.5s, reappear on hover/focus of skills bar
+  const skillsTitle = document.getElementById('skillsTitle');
+  const skillsBar = document.querySelector('.side-skills-bar');
+  function showSkillsTitle() {
+    skillsTitle.classList.add('visible');
+    clearTimeout(skillsTitle._hideTimer);
+    skillsTitle._hideTimer = setTimeout(() => {
+      skillsTitle.classList.remove('visible');
+    }, 2500);
+  }
+  // Initial slide in
+  setTimeout(showSkillsTitle, 600);
+  // Show on hover/focus of skills bar/buttons
+  skillsBar.addEventListener('mouseenter', showSkillsTitle);
+  skillsBar.addEventListener('mouseleave', () => {
+    skillsTitle.classList.remove('visible');
+  });
+  skillsBar.addEventListener('focusin', showSkillsTitle);
+  skillsBar.addEventListener('focusout', () => {
+    skillsTitle.classList.remove('visible');
+  });
+</script>
+<!-- Animated Floating 3D Computer (Left Side) -->
+<style>
+  .floating-computer-container {
+    position: fixed;
+    top: 50%;
+    left: 32px;
+    transform: translateY(-50%);
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .floating-computer,
+  .floating-phone {
+    will-change: transform, filter;
+    animation: computer-float 5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 8px 32px #1d0f5c44);
+    transition: transform 0.5s cubic-bezier(.23,1.12,.32,1), filter 0.4s;
+  }
+  .floating-computer:hover,
+  .floating-phone:hover {
+    transform: rotateY(-16deg) rotateX(10deg) scale(1.08) skewY(2deg);
+    filter: drop-shadow(0 0 48px #4f6fff88);
+  }
+  .floating-computer {
+    width: 220px;
+    height: 180px;
+    perspective: 900px;
+  }
+  .floating-phone {
+    width: 70px;
+    height: 140px;
+    perspective: 900px;
+    animation-delay: 0.7s;
+  }
+  @keyframes computer-float {
+    0%, 100% { transform: rotateY(-12deg) rotateX(6deg) translateY(0) scale(1.04);}
+    50% { transform: rotateY(10deg) rotateX(-6deg) translateY(-18px) scale(1.12);}
+  }
+  @media (max-width: 900px) {
+    .floating-computer {
+      width: 120px;
+      height: 98px;
+    }
+    .floating-phone {
+      width: 38px;
+      height: 76px;
+    }
+    .floating-computer-container {
+      left: 8px;
+      gap: 10px;
+    }
+  }
+  @media (max-width: 600px) {
+    .floating-computer {
+      width: 70px;
+      height: 56px;
+    }
+    .floating-phone {
+      width: 22px;
+      height: 44px;
+    }
+    .floating-computer-container {
+      left: 2px;
+      gap: 4px;
+    }
+  }
+  @media (max-width: 400px) {
+    .floating-computer {
+      width: 44px;
+      height: 34px;
+    }
+    .floating-phone {
+      width: 12px;
+      height: 24px;
+    }
+  }
+</style>
+<div class="floating-computer-container">
+  <!-- Computer SVG -->
+  <svg class="floating-computer" viewBox="0 0 220 180" fill="none">
+    <!-- Monitor shadow -->
+    <ellipse cx="110" cy="170" rx="60" ry="10" fill="#1d0f5c22"/>
+    <!-- Monitor body -->
+    <rect x="30" y="20" width="160" height="100" rx="16" fill="#222a3a" stroke="#4f6fff" stroke-width="3"/>
+    <!-- Screen -->
+    <rect x="44" y="34" width="132" height="72" rx="10" fill="url(#screen-grad)" stroke="#b8d1ff" stroke-width="1.5"/>
+    <!-- Screen reflection -->
+    <path d="M50 38 Q80 60 170 40 Q120 34 50 38Z" fill="#fff" fill-opacity="0.10"/>
+    <!-- Keyboard base -->
+    <rect x="50" y="128" width="120" height="18" rx="7" fill="#2c3448" stroke="#4f6fff" stroke-width="2"/>
+    <!-- Keyboard keys -->
+    <rect x="60" y="134" width="16" height="6" rx="2" fill="#b8d1ff" fill-opacity="0.18"/>
+    <rect x="80" y="134" width="16" height="6" rx="2" fill="#b8d1ff" fill-opacity="0.18"/>
+    <rect x="100" y="134" width="16" height="6" rx="2" fill="#b8d1ff" fill-opacity="0.18"/>
+    <rect x="120" y="134" width="16" height="6" rx="2" fill="#b8d1ff" fill-opacity="0.18"/>
+    <rect x="140" y="134" width="16" height="6" rx="2" fill="#b8d1ff" fill-opacity="0.18"/>
+    <!-- Stand -->
+    <rect x="104" y="120" width="12" height="18" rx="5" fill="#4f6fff" fill-opacity="0.7"/>
+    <ellipse cx="110" cy="140" rx="18" ry="4" fill="#1d0f5c33"/>
+    <!-- Animated code lines on screen -->
+    <g id="code-lines">
+      <rect x="54" y="44" width="90" height="7" rx="3" fill="#4f6fff">
+        <animate attributeName="width" values="90;120;90" dur="2.2s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="54" y="56" width="60" height="7" rx="3" fill="#b8d1ff">
+        <animate attributeName="width" values="60;100;60" dur="2.8s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="54" y="68" width="80" height="7" rx="3" fill="#4f6fff" fill-opacity="0.7">
+        <animate attributeName="width" values="80;60;80" dur="2.5s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="54" y="80" width="50" height="7" rx="3" fill="#b8d1ff" fill-opacity="0.7">
+        <animate attributeName="width" values="50;80;50" dur="2.1s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <defs>
+      <linearGradient id="screen-grad" x1="44" y1="34" x2="176" y2="106" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#232a4a"/>
+        <stop offset="1" stop-color="#4f6fff" stop-opacity="0.18"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <!-- Phone SVG -->
+  <svg class="floating-phone" viewBox="0 0 70 140" fill="none">
+    <!-- Phone shadow -->
+    <ellipse cx="35" cy="134" rx="22" ry="6" fill="#1d0f5c22"/>
+    <!-- Phone body -->
+    <rect x="7" y="8" width="56" height="112" rx="16" fill="#232a4a" stroke="#4f6fff" stroke-width="2.5"/>
+    <!-- Screen -->
+    <rect x="14" y="18" width="42" height="92" rx="8" fill="url(#phone-screen-grad)" stroke="#b8d1ff" stroke-width="1"/>
+    <!-- Speaker -->
+    <rect x="28" y="14" width="14" height="3" rx="1.5" fill="#b8d1ff" fill-opacity="0.3"/>
+    <!-- Home button -->
+    <ellipse cx="35" cy="120" rx="5" ry="2.2" fill="#b8d1ff" fill-opacity="0.18"/>
+    <!-- Animated code lines on phone screen -->
+    <g id="phone-code-lines">
+      <rect x="18" y="26" width="28" height="5" rx="2" fill="#4f6fff">
+        <animate attributeName="width" values="28;38;28" dur="2.2s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="18" y="36" width="18" height="5" rx="2" fill="#b8d1ff">
+        <animate attributeName="width" values="18;32;18" dur="2.8s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="18" y="46" width="22" height="5" rx="2" fill="#4f6fff" fill-opacity="0.7">
+        <animate attributeName="width" values="22;14;22" dur="2.5s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="18" y="56" width="14" height="5" rx="2" fill="#b8d1ff" fill-opacity="0.7">
+        <animate attributeName="width" values="14;26;14" dur="2.1s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <defs>
+      <linearGradient id="phone-screen-grad" x1="14" y1="18" x2="56" y2="110" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#232a4a"/>
+        <stop offset="1" stop-color="#4f6fff" stop-opacity="0.18"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+
+<!-- Helpers: canvas DPR and UI utils -->
+<script src="./canvas-utils.js"></script>
+<script src="./ui-utils.js"></script>
+
+</html>
+
