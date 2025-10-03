@@ -58,9 +58,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* ensure full-screen on mobile; dvh first then fallback */
-      height: 100dvh;
-      height: 100vh;
+  /* ensure full-screen on mobile using dynamic --vh variable */
+  height: calc(var(--vh, 1vh) * 100);
+  height: 100dvh;
+  height: 100vh;
       transition: opacity 0.7s cubic-bezier(.4,1.7,.6,1), visibility 0.7s;
       opacity: 1;
       visibility: visible;
@@ -226,6 +227,54 @@
     </button>
   </div>
   <script>
+    // Polyfill-ish helper: keep a CSS var --vh in sync with the real viewport height
+    (function(){
+      function setVh(){
+        const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+        document.documentElement.style.setProperty('--vh', (vh * 0.01) + 'px');
+      }
+      setVh();
+
+      // Polling fallback: iOS Safari sometimes animates the chrome and events are delayed. When the overlay
+      // is visible we'll poll briefly to update --vh until it stabilizes.
+      let _pollId = null;
+      function startVhPoll(){
+        stopVhPoll();
+        let last = document.documentElement.style.getPropertyValue('--vh');
+        let checks = 0;
+        _pollId = setInterval(()=>{
+          setVh();
+          checks++;
+          const now = document.documentElement.style.getPropertyValue('--vh');
+          // stop early if stable after a few checks
+          if(now === last && checks > 3) { stopVhPoll(); }
+          last = now;
+          if(checks > 40) stopVhPoll(); // safeguard (~4s)
+        }, 100);
+      }
+      function stopVhPoll(){ if(_pollId){ clearInterval(_pollId); _pollId = null; } }
+
+      if(window.visualViewport){
+        window.visualViewport.addEventListener('resize', setVh);
+        window.visualViewport.addEventListener('scroll', setVh);
+      }
+      window.addEventListener('resize', setVh);
+      window.addEventListener('orientationchange', ()=>{ setVh(); startVhPoll(); });
+      window.addEventListener('focus', ()=>{ setVh(); startVhPoll(); });
+      document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ setVh(); startVhPoll(); } });
+
+      // Start polling while welcome overlay is visible (default on load) and stop when hidden
+      const welcomeOverlay = document.getElementById('welcomeOverlay');
+      if(welcomeOverlay){
+        // Start poll immediately (overlay visible by default)
+        startVhPoll();
+        welcomeOverlay.addEventListener('transitionend', ()=>{
+          if(welcomeOverlay.classList.contains('hide')) stopVhPoll(); else startVhPoll();
+        });
+      }
+    })();
+  </script>
+  <script>
     // Hide overlay and allow site interaction after click
     const welcomeOverlay = document.getElementById('welcomeOverlay');
     const welcomeBtn = document.getElementById('welcomeBtn');
@@ -315,7 +364,8 @@
     welcomeStars.height = Math.round(cssH * dpr);
   // use dynamic viewport units where supported for mobile browsers
   welcomeStars.style.width = CSS && CSS.supports && CSS.supports('width','100dvw') ? '100dvw' : '100vw';
-  welcomeStars.style.height = CSS && CSS.supports && CSS.supports('height','100dvh') ? '100dvh' : '100vh';
+  // prefer CSS variable-based height (set by visualViewport polyfill)
+  welcomeStars.style.height = 'calc(var(--vh, 1vh) * 100)';
         const ctx = welcomeStars.getContext('2d');
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
@@ -655,7 +705,7 @@
   bgCanvas.style.left = 0;
   bgCanvas.style.width = '100vw';
   bgCanvas.style.width = (CSS && CSS.supports && CSS.supports('width','100dvw')) ? '100dvw' : '100vw';
-  bgCanvas.style.height = (CSS && CSS.supports && CSS.supports('height','100dvh')) ? '100dvh' : '100vh';
+  bgCanvas.style.height = 'calc(var(--vh, 1vh) * 100)';
   bgCanvas.style.zIndex = '-2';
   bgCanvas.style.pointerEvents = 'none';
   bgCanvas.style.background = '#16015f';
@@ -711,7 +761,7 @@
   starCanvas.style.top = 0;
   starCanvas.style.left = 0;
   starCanvas.style.width = (CSS && CSS.supports && CSS.supports('width','100dvw')) ? '100dvw' : '100vw';
-  starCanvas.style.height = (CSS && CSS.supports && CSS.supports('height','100dvh')) ? '100dvh' : '100vh';
+  starCanvas.style.height = 'calc(var(--vh, 1vh) * 100)';
   starCanvas.style.pointerEvents = 'none';
   starCanvas.style.zIndex = 0;
   starCanvas.style.background = '#16015f';
