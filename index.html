@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Coding.cam</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+      .brand {
+        color: #3d2fa8; /* purple */
+        transition: color 0.2s;
+      }
+      .brand:hover {
+        color: #1d081c; /* dark purple */
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Starfield background -->
+    <canvas id="starfield" aria-hidden="true"></canvas>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" role="dialog" aria-modal="true">
+      <div class="card">
+        <h1 class="title">My Portfolio</h1>
+        <p class="sub">Showcasing my work and skills</p>
+        <button class="cta" id="enterBtn" aria-label="Enter site">
+          Enter
+          <span class="glow" aria-hidden="true"></span>
+        </button>
+        <p class="hint">Tap anywhere or press Enter</p>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <header class="hero" id="hero" tabindex="-1">
+      <a href="#" class="brand">Coding.cam</a>
+      <img
+        class="hero-img"
+        src="https://media.licdn.com/dms/image/v2/D4E03AQGwAVy9TtdvpA/profile-displayphoto-scale_200_200/B4EZnGXrTkIUAY-/0/1759969720257?e=1762992000&v=beta&t=8iv9e4tpGxRzztwB4o93Jqq-WgUbtbWQYIQqyzkmmkw"
+        alt="Cameron portrait"
+      />
+      <nav class="hero-actions" aria-label="Primary">
+        <a class="btn" href="about.html">About Me</a>
+        <a class="btn" href="https://instagram.com/coding.cam" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+    </header>
+
+    <!-- Skills -->
+    <aside class="skills" aria-label="Skills">
+      <h2 class="skills-title">Skills</h2>
+      <button class="skill"><span class="ico">💻</span>Web Development</button>
+      <button class="skill"><span class="ico">🧠</span>Problem Solving</button>
+      <button class="skill"><span class="ico">💬</span>Customer Success</button>
+      <button class="skill"><span class="ico">⚙️</span>Technical Support</button>
+    </aside>
+
+    <audio id="chime" preload="auto">
+      <source
+        src="data:audio/wav;base64,UklGRmQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYAAABsAAAAPwAAAENhAAAAPwAAAG0AAABkAAAAPwAAAC8AAAABAAAAAQAA//8AAP//AAD//wAA//8AAP//AAD//wAA"
+        type="audio/wav"
+      />
+    </audio>
+
+    <script>
+      /* ---- Overlay Logic ---- */
+      const overlay = document.getElementById("overlay");
+      const enterBtn = document.getElementById("enterBtn");
+      const chime = document.getElementById("chime");
+      const hero = document.getElementById("hero");
+
+      function enterSite() {
+        overlay.classList.add("fade-out");
+        setTimeout(() => {
+          overlay.style.display = "none";
+          hero.focus();
+        }, 500);
+        chime?.play().catch(() => {});
+      }
+
+      enterBtn.addEventListener("click", enterSite);
+      document.addEventListener("keydown", e => e.key === "Enter" && enterSite());
+      document.addEventListener("click", () => {
+        if (overlay.style.display !== "none") enterSite();
+      });
+
+      /* ---- Starfield ---- */
+      const canvas = document.getElementById("starfield");
+      const ctx = canvas.getContext("2d");
+      let stars = [];
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars = Array.from({ length: 250 }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.5 + 0.3,
+          s: Math.random() * 0.4 + 0.2
+        }));
+      }
+
+      function draw() {
+        ctx.fillStyle = "#0b0b12";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (const star of stars) {
+          ctx.beginPath();
+          ctx.globalAlpha = Math.random() * 0.8 + 0.2;
+          ctx.fillStyle = "white";
+          ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+          ctx.fill();
+          star.y += star.s;
+          if (star.y > canvas.height) star.y = 0;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+      draw();
+    </script>
+
+    <style>
+      body, html {
+        height: 100%;
+        margin: 0;
+        background: transparent;
+        color: #e8eefc;
+        font-family: Inter, system-ui, sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* Starfield */
+      #starfield {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -999;
+        background: radial-gradient(circle at 20% 20%, #0b0b12, #0d1a3a 70%);
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(6px);
+        transition: opacity 0.5s ease;
+      }
+
+      .fade-out {
+        opacity: 0;
+      }
+
+      .card {
+        background: rgba(255,255,255,0.05);
+        padding: 30px 40px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 36px 120px rgba(6,8,23,0.6);
+      }
+
+      .title {
+        font-size: 2rem;
+        margin: 0 0 10px 0;
+      }
+
+      .sub {
+        margin-bottom: 20px;
+        color: rgba(230,230,255,0.8);
+      }
+
+      .cta {
+        position: relative;
+        padding: 12px 24px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #6d5aff, #3a2ea1);
+        border: none;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 20px 50px rgba(109,90,255,0.3);
+      }
+
+      .cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 25px 70px rgba(109,90,255,0.5);
+      }
+
+      .hint {
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: rgba(200,210,255,0.7);
+      }
+
+      /* Hero Section */
+      .hero {
+        position: relative;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin-top: 120px;
+      }
+
+      .brand {
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: 800;
+        color: #e8eefc;
+        text-decoration: none;
+        z-index: 100;
+      }
+
+      .hero-img {
+        width: 260px;
+        height: 260px;
+        border-radius: 18px;
+        object-fit: cover;
+        border: 1px solid rgba(255,255,255,0.06);
+        box-shadow: 0 26px 80px rgba(6,8,23,0.6), 0 10px 24px rgba(109,90,255,0.18);
+      }
+
+      .hero-actions {
+        margin-top: 18px;
+        display: flex;
+        gap: 12px;
+      }
+
+      .btn {
+        background: rgba(255,255,255,0.03);
+        color: #eaf0ff;
+        padding: 8px 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: 1px solid rgba(255,255,255,0.02);
+        transition: transform .2s, background .3s;
+      }
+
+      .btn:hover {
+        background: linear-gradient(120deg, rgba(109,90,255,0.3), rgba(58,46,161,0.25));
+        transform: translateY(-3px);
+      }
+
+      /* Skills */
+      .skills {
+        position: fixed;
+        right: 4%;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 12;
+        background: rgba(10,10,20,0.25);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 14px;
+        padding: 12px 14px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 10px 30px rgba(6,8,23,0.5);
+        width: 160px;
+      }
+
+      .skills-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: rgba(230,235,255,0.7);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .skill {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.03);
+        color: rgba(230,235,255,0.7);
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-align: left;
+      }
+
+      .skill:hover {
+        background: linear-gradient(120deg, rgba(109,90,255,0.25), rgba(58,46,161,0.18));
+        color: #440541;
+        border-color: rgba(109,90,255,0.2);
+        transform: translateX(3px);
+      }
+
+      @media (max-width: 850px) {
+        .skills {
+          position: relative;
+          top: auto;
+          right: auto;
+          transform: none;
+          margin: 30px auto;
+          width: auto;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
+          background: rgba(10,10,20,0.3);
+        }
+        .skill {
+          flex: 1 1 40%;
+          text-align: center;
+        }
+        .skills-title {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </body>
+</html>
+

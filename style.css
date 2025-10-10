@@ -1,0 +1,78 @@
+/* Minimal styles for index.html welcome overlay and hero */
+:root{
+  --bg:#0b0b12;
+  --accent:rgb(109,90,255);
+  --glass:rgba(255,255,255,0.04);
+  --dur:520ms;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#e8eefc}
+
+/* Canvas */
+canvas#bg{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0}
+
+/* Overlay */
+.overlay{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:40;background:linear-gradient(180deg, rgba(2,4,10,0.6), rgba(0,0,0,0.6));
+  backdrop-filter:blur(6px);
+  opacity:1; transition:opacity var(--dur) ease;
+}
+.overlay.is-hidden{opacity:0;pointer-events:none}
+.overlay[hidden]{display:none}
+
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:28px 36px;border-radius:16px;box-shadow:0 36px 120px rgba(6,8,23,0.6);
+  border:1px solid var(--glass);text-align:center;transform:translateZ(0)
+}
+.title{font-size:clamp(20px,4vw,36px);margin:0 0 6px 0}
+.sub{margin:0 0 18px 0;color:rgba(225,233,255,0.9)}
+.cta{
+  position:relative;display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:12px;
+  background:linear-gradient(180deg,var(--accent),#5b4af7);color:white;border:0;font-weight:700;cursor:pointer;
+  box-shadow:0 18px 48px rgba(91,74,247,0.28);transform:translateZ(12px)
+}
+.cta .glow{position:absolute;inset:0;border-radius:12px;box-shadow:0 24px 72px rgba(109,90,255,0.24);pointer-events:none}
+.hint{margin-top:12px;font-size:0.9rem;color:rgba(200,210,255,0.7)}
+
+/* Click ripple */
+.ring{
+  position:absolute;width:8px;height:8px;border-radius:50%;background:transparent;
+  border:3px solid rgba(109,90,255,0.9);transform:translate(-50%,-50%) scale(0.4);opacity:0.9;
+  animation:ring 850ms cubic-bezier(.2,.9,.2,1) forwards
+}
+@keyframes ring{
+  0%{transform:translate(-50%,-50%) scale(0.4);opacity:0.9}
+  60%{transform:translate(-50%,-50%) scale(2.2);opacity:0.6}
+  100%{transform:translate(-50%,-50%) scale(3.6);opacity:0}
+}
+
+/* Hero + reveal */
+.hero{
+  position:relative;z-index:20;display:flex;align-items:center;gap:22px;padding:36px;max-width:980px;margin:80px auto 0 auto;
+  opacity:0; transform:translateY(8px); transition:opacity var(--dur) ease, transform var(--dur) ease;
+}
+body.entered .hero{opacity:1; transform:none}
+
+.brand{font-weight:800;color:white;text-decoration:none;font-size:1.1rem}
+.hero-img{width:96px;height:96px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
+.hero-actions{margin-left:auto;display:flex;gap:12px}
+.btn{background:rgba(255,255,255,0.03);color:#eaf0ff;padding:8px 12px;border-radius:10px;text-decoration:none;border:1px solid rgba(255,255,255,0.02)}
+
+/* Decor */
+.devices{position:fixed;right:8%;top:20%;transform:translateZ(0);z-index:10;pointer-events:none}
+.skills{position:fixed;left:6%;top:30%;transform:translateY(-50%);z-index:10}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .overlay,.hero{transition:none}
+}
+
+/* Mobile */
+@media (max-width:700px){
+  .hero{flex-direction:column;align-items:flex-start;margin:36px 18px}
+  .devices{display:none}
+  .skills{display:none}
+  .card{padding:18px;border-radius:12px}
+}

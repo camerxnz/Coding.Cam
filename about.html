@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Me | Coding.cam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style/style.css" />
+    <!-- About page styles are included in /style/style.css -->
+  </head>
+
+  <body>
+    <canvas id="starfield"></canvas>
+
+    <div class="container" id="card">
+      <h1>About Me</h1>
+      <p>
+        I’m Cameron — a developer focused on performance, precision, and clarity.
+        I build clean, data-driven systems that merge usability with deep tech.
+      </p>
+      <a href="index.html" class="button">Back to Home</a>
+    </div>
+
+    <!-- Centered contact buttons -->
+    <div class="contact-row">
+      <a href="mailto:cameron09ventura@gmail.com" class="button">Contact Me</a>
+      <a href="https://www.linkedin.com/in/cameron-ventura/" target="_blank" rel="noopener" class="button">LinkedIn</a>
+    </div>
+
+    <!-- Memory game section -->
+    <div class="memory-game">
+      <div class="mg-header">
+        <strong>Memory</strong>
+        <button id="mgRestart" class="button">Restart</button>
+      </div>
+      <div id="mgGrid" class="mg-grid"></div>
+      <div class="mg-info">Moves: <span id="mgMoves">0</span> | Matches: <span id="mgMatches">0</span></div>
+    </div>
+
+    <script src="script/canvas-utils.js" defer></script>
+    <script src="script/ui-utils.js" defer></script>
+    <script src="script/about.js" defer></script>
+  </body>
+</html>
+
+
